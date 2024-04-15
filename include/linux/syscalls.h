@@ -1381,4 +1381,14 @@ int __sys_getsockopt(int fd, int level, int optname, char __user *optval,
 		int __user *optlen);
 int __sys_setsockopt(int fd, int level, int optname, char __user *optval,
 		int optlen);
+asmlinkage long mailbox_init(void)
+asmlinkage long mailbox_shutdown(void)
+asmlinkage long mailbox_create(unsigned long id)
+asmlinkage long mailbox_destroy(unsigned long id)
+asmlinkage long mailbox_add(unsigned long id, unsigned char __user *msg, long len)
+asmlinkage long mailbox_delete(unsigned long id)
+asmlinkage long mailbox_send(unsigned long from, unsigned long to)
+asmlinkage long mailbox_recv(unsigned long id, unsigned char __user *msg, long len) 
+asmlinkage long message_count(unsigned long id)
+asmlinkage long message_length(unsigned long id)
 #endif

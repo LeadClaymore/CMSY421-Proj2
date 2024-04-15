@@ -1,18 +1,71 @@
-Linux kernel
-============
+Clayton Gorman Ross
+CMSC 421, spring 2024
 
-There are several guides for kernel developers and users. These guides can
-be rendered in a number of formats, like HTML and PDF. Please read
-Documentation/admin-guide/README.rst first.
+Project Overview
+Introduction: Briefly describe the purpose of the project and its main functionality.
+This was meant to implement an queue stored within a BST, the queue was meant to hold a message and its message
+the important part of the project is it was in kernel space
 
-In order to build the documentation, use ``make htmldocs`` or
-``make pdfdocs``.  The formatted documentation can also be read online at:
+Objective: Clearly state what the project is intended to achieve, highlighting the implementation of the Graph data structure and the associated system calls. This will tell me if you truly understand the project.
+I do not truely understand the graph structure but what I believe was meant to happen was a queue was made in kernel space, in this example stored in a BST, and it was meant to pass data to and from userspace
 
-    https://www.kernel.org/doc/html/latest/
+Contact: Provide contact information or steps for getting help if someone is having trouble with the project.
+contact TA or go to office hours
 
-There are various text files in the Documentation/ subdirectory,
-several of them using the Restructured Text markup notation.
+Installation and Setup
+Environment Setup: Detail the steps for setting up the development environment, including any dependencies or tools required.
+using the kernel provided in project 0 modifiy it to use the neccicary syscalls
 
-Please read the Documentation/process/changes.rst file, as it contains the
-requirements for building and running the kernel, and information about
-the problems which may result by upgrading your kernel.
+Building the Kernel: Provide instructions on how to build and install your modified Linux kernel.
+from what I understand the steps from project 0:
+make mrproper
+make xconfig
+make bindeb-pkg
+to be honest I did not test it
+
+Kernel Modifications
+System Calls Implemented: List the new system calls you've added to the kernel, with a brief description of each.
+
+long mailbox_init(void): Initializes the queue system, setting up the initial state of the graph. You may initialize the graph by adding the root node. Return 0 on success.
+long mailbox_shutdown(void): Shuts down the queue system, deleting all existing queues and any messages contained therein. Returns 0 on success.
+long mailbox_create(unsigned long id): Creates a new queue with the given id if it does not already exist (no duplicates are allowed). Returns 0 on success or an appropriate error on failure. If  a negative id or an id of (2­­64 - 1) is passed, this is considered an invalid ID and an appropriate error shall be returned.
+long mailbox_destroy(unsigned long id): Deletes the queue identified by id if it exists. If the queue has any messages stored in it, they should be deleted. Returns 0 on success or an appropriate error code on failure.
+long mailbox_connect(unsigned long from, unsigned long to, unsigned long weight): Connects two queues. Queues connected in this way can send messages from from to to, but not vice versa. A queue may not be connected to itself, be connected to the same queue twice, nor may a connection have a weight less than 1 or equal to (264 – 1). Returns 0 on success or an appropriate error code on failure. 
+long mailbox_disconnect(unsigned long from, unsigned long to): Disconnects two queues that have a connection. Returns 0 on success or an appropriate error code on failure.
+long mailbox_add(unsigned long id, unsigned char __user *msg, long len): Adds a new message to the queue identified by id if it exists. An appropriate return code is issued if the queue does not exist.
+long mailbox_delete(unsigned long id): Deletes the oldest added message in the mailbox identified by id if it exists. This is a FIFO data structure - hence why we are deleting the oldest message. HINT: Keep in mind all the things you have to do for this one - it's not just a matter of just deleting a node in the queue. What other data within your mailbox data structure (not the graph data structure, just one single mailbox) gets affected by the deletion other than just the message node in the FIFO queue? An appropriate return code is issued if the queue is empty or does not exist.
+long mailbox_send(unsigned long from, unsigned long to): Sends a new message from the queue identified by from to the queue identified by to if they both exist and are connected. You must check, in an efficient manner, whether the two nodes are connected. Returns 0 on success or an appropriate error code on failure.
+long mailbox_recv(unsigned long id, unsigned char __user *msg, long len): Reads the first message that is in the mailbox identified by id if it exists, storing either the entire length of the message or len bytes to the user-space pointer msg, whichever is less. The entire message is then removed from the mailbox (even if len was less than the total length of the message). Returns the number of bytes copied to the user space pointer on success or an appropriate error code on failure. 
+long message_count(unsigned long id): Print the number of messages in the queue to the system log identified by id if it exists. Returns an appropriate error code on failure.
+long message_length(unsigned long id): Retrieves the length (in bytes) of the oldest message pending in the mailbox identified by id, if it exists. Returns the number of bytes in the oldest pending message in the mailbox on success, or an appropriate error code on failure.
+
+Data Structures: Describe the data structures or modifications to existing structures you implemented. 
+a bst that contaions queues that contain a message each
+
+Locking Mechanisms: Explain the locking mechanisms used, including the rationale behind the choice of each mechanism.
+did not use any prob should have
+
+User-space Driver Programs
+Driver Overview: Offer an overview of the user-space driver programs, explaining their purpose in testing the system calls.
+idk
+
+Building Drivers: Include a step-by-step guide to building the driver programs using the provided Makefile.
+no idea does not exist
+
+Running Tests: Describe how to run each test program, including the expected outputs and any command-line arguments or flags.
+no idea does not exist
+
+Testing Strategy
+General Strategy: Outline your approach to testing the system calls, including how you handle normal operations and error cases.
+did not test the program
+
+Test Cases: Provide a list of test cases, explaining what each one covers and why it’s important.
+no idea does not exist
+
+Troubleshooting
+Common Issues: List any common issues that might arise and how to resolve them.
+no idea did not test
+
+References 
+Please state all outside resources used during the project. This would include websites or textbooks used. Also, please include output of any llm used.
+for parts of the userspace to kernel space code I used chatGPT for the outline of what to do and c functions to use
